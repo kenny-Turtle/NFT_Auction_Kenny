@@ -1,31 +1,10 @@
 
-### 第 1 阶段：基础准备
-安装 Hardhat
-```
-mkdir NFT_Auction_Kenny
-cd NFT_Auction_Kenny
-npm init -y
-npm install --save-dev hardhat@3.1.0
-npx hardhat --init
-npm install
-```
-安装 OpenZeppelin
-```
-npm install --save-dev "@openzeppelin/contracts"
-```
-安装 chainlink
-```
-npm install --save-dev "@chainlink/contracts"
-```
-执行viem
-```
-npx hardhat keystore set SEPOLIA_RPC_URL
-npx hardhat keystore set PRIVATE_KEY
-```
+
 #### 项目总揽
 一个 NFT 合约
 一个拍卖市场合约
 一个支持升级的拍卖版本
+一个升级用的V2版本
 一个价格预言机工具库
 单元测试与集成测试
 本地部署脚本
@@ -72,28 +51,73 @@ NFT_Auction_Kenny/
 ```
 
 
+### 第 1 阶段：基础准备
+安装 Hardhat
+```
+mkdir NFT_Auction_Kenny
+cd NFT_Auction_Kenny
+npm init -y
+npm install --save-dev hardhat@3.1.0
+npx hardhat --init
+npm install
+```
+安装 OpenZeppelin
+```
+npm install --save-dev "@openzeppelin/contracts"
+```
+安装 chainlink
+```
+npm install --save-dev "@chainlink/contracts"
+```
+执行viem
+```
+npx hardhat keystore set SEPOLIA_RPC_URL
+npx hardhat keystore set PRIVATE_KEY
+```
 
 
-
-第 2 阶段：NFT 合约
+### 第 2 阶段：NFT 合约
 写 ERC721
 写 mint
 写基本测试
-第 3 阶段：拍卖基础版
+### 第 3 阶段：拍卖基础版
 写结构体
 写 createAuction
 写 bidEth
 写 endAuction
-第 4 阶段：ERC20 支付
+### 第 4 阶段：ERC20 支付
 接入 ERC20
 加入 approve / transferFrom
-第 5 阶段：Chainlink
+### 第 5 阶段：Chainlink
 接价格 feed
 写价格换算库
-第 6 阶段：升级
-改成 UUPS 或透明代理
+### 第 6 阶段：升级
+改成 UUPS
 编写升级测试
-第 7 阶段：部署与文档
+```
+kenny@zhangfengjiedeMacBook-Pro NFT_Auction_Kenny % npx hardhat test test/Upgrade.test.ts --network sepolia
+No contracts to compile
+Running Mocha tests
+
+
+  UUPS Upgrade Test
+Network: sepolia
+V1 impl: 0xE78A864BbF47dE733034DCa065D0A78D92DBB35C
+Proxy: 0xa5d10fF99bdd2C5fC0904336197866C605D5272B
+V2 impl: 0x6Aa22331EE93bC9de33776ECbd4B02aE30C49a56
+Proxy owner: 0xc7F340b38178cfF13a32d33570Da4dA771F4ED13
+Signer: 0xc7F340b38178cfF13a32d33570Da4dA771F4ED13
+Upgraded to V2
+feeValue: 999
+    ✔ should deploy and upgrade contract (82174ms)
+
+
+  1 passing (1m)
+
+
+1 passing (1 mocha)
+```
+### 第 7 阶段：部署与文档
 部署到 Sepolia
 输出地址
 整理 README 和测试报告

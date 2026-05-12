@@ -5,12 +5,11 @@ pragma solidity ^0.8.28;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+
 import "./upgradeable/AuctionMarketStorage.sol";
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 // ERC20出价
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // 价格转换
@@ -21,12 +20,22 @@ contract AuctionMarketUpgradeable is
     Initializable,
     UUPSUpgradeable,
     OwnableUpgradeable,
-    ReentrancyGuardUpgradeable,
     IERC721Receiver,
     AuctionMarketStorage
 {
     // 引入库
     using PriceConverter for uint256;
+
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(address _priceFeed) public initializer {
+        __Ownable_init(msg.sender);
+        priceFeed = _priceFeed;
+    }
+
+    function _authorizeUpgrade(address) internal override onlyOwner {}
 
     // 事件
     event AuctionCreated(
@@ -39,16 +48,12 @@ contract AuctionMarketUpgradeable is
     event Bid(uint256 auctionId, address bidder, uint256 amount);
     event AuctionEnded(uint256 auctionId, address winner, uint256 hightestBid);
 
-    constructor() {
-        _disableInitializers();
-    }
-
-    function initialize(address _priceFeed) public initializer {
-        __Ownable_init();
-        __UUPSUpgradeable_init();
-        __ReentrancyGuard_init();
-
-        priceFeed = _priceFeed;
+    bool private _reentrancyLocked;
+    modifier nonReentrant() {
+        require(!_reentrancyLocked, "Reentrant!");
+        _reentrancyLocked = true;
+        _;
+        _reentrancyLocked = false;
     }
 
     // 创建拍卖
@@ -194,8 +199,4 @@ contract AuctionMarketUpgradeable is
     ) external pure override returns (bytes4) {
         return IERC721Receiver.onERC721Received.selector;
     }
-
-    function _authorizeUpgrade(
-        address newImplementation
-    ) internal override onlyOwner {}
 }

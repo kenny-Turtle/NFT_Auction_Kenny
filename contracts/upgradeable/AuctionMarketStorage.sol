@@ -17,4 +17,5 @@ abstract contract AuctionMarketStorage {
     uint256 internal auctionCounter;
     mapping(uint256 => Auction) internal auctions;
     address internal priceFeed;
+    uint256 public fee;
 }
