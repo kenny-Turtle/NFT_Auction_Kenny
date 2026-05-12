@@ -4,10 +4,16 @@ pragma solidity ^0.8.28;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-
+// ERC20出价
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// 价格转换
+// import "./interfaces/IPriceFeed.sol";
+import "./libraries/PriceConverter.sol";
 
 contract AuctionMarket is IERC721Receiver, ReentrancyGuard {
+    // 引入库
+    using PriceConverter for uint256;
+
     struct Auction {
         address seller;
         address nftAddress;
@@ -24,6 +30,10 @@ contract AuctionMarket is IERC721Receiver, ReentrancyGuard {
     uint256 public auctionCounter;
     mapping(uint256 => Auction) public auctions;
 
+    // chainlink语言机地址
+    address public priceFeed;
+    AggregatorV3Interface internal dataFeed;
+
     // 事件
     event AuctionCreated(
         uint256 auctionId,
@@ -34,6 +44,13 @@ contract AuctionMarket is IERC721Receiver, ReentrancyGuard {
     );
     event Bid(uint256 auctionId, address bidder, uint256 amount);
     event AuctionEnded(uint256 auctionId, address winner, uint256 hightestBid);
+
+    constructor(address _priceFeed) {
+        priceFeed = _priceFeed;
+        dataFeed = AggregatorV3Interface(
+            0x694AA1769357215DE4FAC081bf1f309aDC325306
+        );
+    }
 
     // 创建拍卖
     function createAuction(
@@ -155,6 +172,30 @@ contract AuctionMarket is IERC721Receiver, ReentrancyGuard {
             );
         }
         emit AuctionEnded(auctionId, auction.highestBidder, auction.highestBid);
+    }
+
+    // 获取美元价格(本地)
+    function getEthUsdPrice() external view returns (uint256) {
+        return PriceConverter.getEthUsdPrice(priceFeed);
+    }
+
+    // 计算ETH出价对应的美元价值（本地）
+    function getBidValueInUsd(
+        uint256 ethAmount
+    ) external view returns (uint256) {
+        return ethAmount.getEthValueInUsd(priceFeed);
+    }
+
+    // 获取美元价格(本地)
+    function getEthUsdPriceV2() external view returns (uint256) {
+        return PriceConverter.getEthUsdPriceV2(priceFeed);
+    }
+
+    // 计算ETH出价对应的美元价值（本地）
+    function getBidValueInUsdV2(
+        uint256 ethAmount
+    ) external view returns (uint256) {
+        return ethAmount.getEthValueInUsdV2(priceFeed);
     }
 
     // 实现IERC721Receiver接口，允许合约接收NFT
