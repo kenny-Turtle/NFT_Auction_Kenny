@@ -14,6 +14,7 @@ abstract contract AuctionMarketStorage {
         bool ended;
     }
 
-    uint256 internal _auctionCounter;
-    mapping(uint256 => Auction) internal _autctions;
+    uint256 internal auctionCounter;
+    mapping(uint256 => Auction) internal auctions;
+    address internal priceFeed;
 }
