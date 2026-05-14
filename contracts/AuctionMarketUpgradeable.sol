@@ -190,6 +190,12 @@ contract AuctionMarketUpgradeable is
         return ethAmount.getEthValueInUsd(priceFeed);
     }
 
+    function getAuction(
+        uint256 auctionId
+    ) external view returns (Auction memory) {
+        return auctions[auctionId];
+    }
+
     // 实现IERC721Receiver接口，允许合约接收NFT
     function onERC721Received(
         address,
