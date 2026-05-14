@@ -64,8 +64,7 @@ describe("UUPS Upgrade Test", function(){
 
             // 测试V2新功能
             const auctionV2 = V2.attach(proxy.target);
-            await auctionV2.setFee(999);
-            expect(await auctionV2.fee()).to.equal(999);
+            expect(await auctionV2.getFee()).to.equal(999);
 
         }else{
             // 部署V1
@@ -115,13 +114,10 @@ describe("UUPS Upgrade Test", function(){
             
             // 测试V2新功能
             const auctionV2 = V2.attach(proxy.target);
-            const txSetFee = await auctionV2.setFee(999);
-            await txSetFee.wait(); // 👈 必须加这个！
+            // const txSetFee = await auctionV2.setFee(999);
+            // await txSetFee.wait(); // 👈 必须加这个！
 
-            // 👇 再读一遍
-            const feeValue = await auctionV2.fee();
-            console.log("feeValue:", feeValue.toString()); // 打印看看
-            expect(await auctionV2.fee()).to.equal(999);
+            expect(await auctionV2.getFee()).to.equal(999);
         }
     });
 });

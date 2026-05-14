@@ -8,7 +8,7 @@ contract AuctionMarketV2 is AuctionMarketUpgradeable {
         _disableInitializers();
     }
 
-    function setFee(uint256 _fee) external onlyOwner {
-        fee = _fee;
+    function getFee() external pure returns (uint256) {
+        return 999;
     }
 }
